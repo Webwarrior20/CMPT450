@@ -1,0 +1,13 @@
+/* -------------------- Global Styles -------------------- */
+@import "./reset.css";
+@import "./variables.css";
+@import "./typography.css";
+@import "./utils.css";
+
+/* -------------------- Layout Styles -------------------- */
+@import "./layout/main_app_layout.css";
+
+/* -------------------- Pages Styles -------------------- */
+
+/* -------------------- Component Styles -------------------- */
+

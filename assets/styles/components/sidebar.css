@@ -1,0 +1,55 @@
+.sidebar {
+    display: grid;
+    align-content: flex-start;
+    gap: 2rem;
+    height: calc(100vh - 2rem);
+    padding: 2rem 1rem;
+    background-color: var(--color-grey-600);
+    border-radius: 0.75rem;
+    position: sticky;
+    top: 1rem;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sidebar-logo {
+    width: 2.5rem;
+}
+
+.sidebar-title {
+    color: var(--color-green-500);
+}
+
+.sidebar-link {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    opacity: 0.5;
+    color: var(--color-white);
+    transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background-color: var(--color-grey-500);
+    color: var(--color-green-500);
+    opacity: 1;
+}
+
+.sidebar-links {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.sidebar-sub-links {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.sidebar-link.active {
+    color: var(--color-green-500);
+    opacity: 1;
+}

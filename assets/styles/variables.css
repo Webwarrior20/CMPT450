@@ -1,0 +1,26 @@
+:root {
+    /* -------------------- Primary -------------------- */
+    --color-green-100: #93D5A3;
+    --color-green-500: #1ED760;
+    --color-green-700: #2C5C35;
+    --color-green-900: #1E3E27;
+    --color-white: #FFFFFF;
+    --color-black: #181414;
+
+    /* -------------------- Neutrals -------------------- */
+    --color-grey-600: #211D1D;
+    --color-grey-500: #2A2626;
+    --color-grey-400: #343131;
+    --color-grey-300: #464343;
+    --color-grey-200: #5D5A5A;
+    --color-grey-100: #747272;
+    --color-grey-0: #8B8989;
+
+    /* -------------------- Decoration -------------------- */
+    --color-purple-0: #4E3750;
+    --color-green-0: #016250;
+    --color-blue-700: #1E3162;
+    --color-blue-500: #283C92;
+    --color-blue-300: #0D70E4;
+    --color-red-0: #BF182E;
+}

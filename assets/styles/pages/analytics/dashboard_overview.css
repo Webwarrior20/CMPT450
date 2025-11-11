@@ -1,0 +1,16 @@
+.overview-stats {
+    display: grid;
+    align-items: flex-start;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    display: grid;
+    align-content: flex-end;
+    height: 10rem;
+    padding: 1.5rem;
+    color: #fff;
+    background-color: var(--card-color, #211D1D);
+    border-radius: 0.75rem;
+}

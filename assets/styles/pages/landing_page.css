@@ -1,0 +1,47 @@
+.landing-page {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 15rem;
+    min-height: calc(100vh - 2rem);
+    color: black;
+    background-color: var(--color-green-500);
+    border-radius: 0.75rem;
+}
+
+.landing-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.landing-logo {
+    width: 6.5rem;
+}
+
+.landing-body {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+}
+
+.landing-upload-section {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+}
+
+.landing-upload-button {
+    display: flex;
+    gap: 1rem;
+    padding: 16px 28px;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border-radius: 50rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.landing-upload-button:hover {
+    background-color: var(--color-green-700);
+}

@@ -1,0 +1,133 @@
+@import url("https://fonts.googleapis.com/css2?family=Reddit+Sans:ital,wght@0,200..900;1,200..900&display=swap");
+
+/* -------------------- Global Styles -------------------- */
+
+* {
+    font-family: "Reddit Sans", sans-serif;
+}
+
+li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* -------------------- Headings -------------------- */
+
+.display {
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: 150%;
+    letter-spacing: -0.03125rem;
+}
+
+.heading-1 {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 150%;
+    letter-spacing: -0.03125rem;
+}
+
+.heading-2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 150%;
+    letter-spacing: -0.03125rem;
+}
+
+.heading-3 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 150%;
+    letter-spacing: -0.03125rem;
+}
+
+.heading-4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 150%;
+    letter-spacing: -0.03125rem;
+}
+
+/* -------------------- Body / Paragraph -------------------- */
+
+.body {
+    font-size: 1.25rem;
+    line-height: 150%;
+    letter-spacing: -0.03125rem;
+}
+
+.caption {
+    font-size: 1rem;
+    line-height: 150%;
+    letter-spacing: -0.03125rem;
+}
+
+.subtitle {
+    font-size: 0.90rem;
+    line-height: 150%;
+    letter-spacing: -0.03125rem;
+}
+
+/* -------------------- Font Weight -------------------- */
+
+.bold {
+    font-weight: 700;
+}
+
+.semi-bold {
+    font-weight: 600;
+}
+
+.medium {
+    font-weight: 500;
+}
+
+.normal {
+    font-weight: 400;
+}
+
+.light {
+    font-weight: 300;
+}
+
+/* -------------------- Font Styles -------------------- */
+
+.italic {
+    font-style: italic;
+}
+
+.normal {
+    font-style: normal;
+}
+
+/* -------------------- Text Alignment -------------------- */
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* -------------------- Text Transformation -------------------- */
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.lowercase {
+    text-transform: lowercase;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}

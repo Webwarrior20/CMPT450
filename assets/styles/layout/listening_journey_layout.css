@@ -1,0 +1,11 @@
+.listening-journey {
+    display: grid;
+    align-items: flex-start;
+    grid-template-columns: 20rem auto;
+    gap: 1rem;
+}
+
+.listening-journey-content {
+    display: grid;
+    gap: 1rem;
+}
