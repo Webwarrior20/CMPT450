@@ -1,3 +1,8 @@
+#sidebar-container {
+    position: sticky;
+    top: 1rem;
+}
+
 .sidebar {
     display: grid;
     align-content: flex-start;
