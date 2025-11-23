@@ -1,0 +1,37 @@
+.track-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.track-item {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr auto;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    color: var(--color-white);
+    background: var(--color-grey-600);
+    border-radius: 0.75rem;
+}
+
+.track-rank {
+    width: 3rem;
+}
+
+.track-main-info {
+    display: grid;
+    grid-template-columns: 3rem 6.75rem 1fr;
+    align-items: center;
+    gap: 3rem;
+}
+
+.track-album-art {
+    width: 6.75rem;
+    height: 6.75rem;
+    background-color: var(--color-grey-500);
+    border-radius: 0.75rem;
+}
+
+.link,
+.spotify-track-link-icon {
+    width: 2rem;
+}

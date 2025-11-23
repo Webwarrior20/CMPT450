@@ -1,0 +1,22 @@
+.time-period-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.time-period-button {
+    display: flex;
+    justify-items: flex-start;
+    padding: 1.5rem 2rem;
+    background: var(--color-grey-600);
+    color: var(--color-white);
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+}
+
+.time-period-button.active {
+    background: var(--color-green-500);
+    color: var(--color-black);
+    cursor: default;
+}
