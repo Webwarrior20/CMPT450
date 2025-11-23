@@ -1,24 +1,112 @@
-/* -------------------- Accessibility -------------------- */
-.sr-only:not(:focus):not(:active) {
-	position: absolute;
-	overflow: hidden;
-	clip: rect(0 0 0 0);
-	width: 1px;
-	height: 1px;
-	white-space: nowrap;
-	clip-path: inset(50%);
+/* --------------------------------------------------------------
+   TOAST NOTIFICATION (Spotify-Style)
+-------------------------------------------------------------- */
+
+.toast {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: #1DB954; /* Spotify Green */
+    color: white;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    z-index: 9999;
+
+    /* Animation */
+    opacity: 0;
+    transform: translateY(-15px) scale(0.97);
+    animation: toastFade 3.6s ease forwards;
+
+    /* Subtle Spotify-style glow + blur */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
 }
 
-/* -------------------- Grid -------------------- */
-.grid-bleed {
-	display: grid;
-	grid-template-columns: 1fr calc(100% - 1.5rem * 2) 1fr;
+/* Toast Variants */
+.toast.success { background: #1DB954; }
+.toast.error   { background: #E0245E; }   /* Spotify red-style */
+.toast.info    { background: #5352ED; }   /* Soft purple */
 
-	@media (min-width: 48rem) {
-		grid-template-columns: 1fr min(100% - 5rem * 2, 70rem) 1fr;
-	}
+/* Keyframes for fade + slide */
+@keyframes toastFade {
+    0% {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.97);
+    }
+    12% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    85% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+    }
+}
 
-	& > * {
-		grid-column: 2;
-	}
+/* Responsive (small screens) */
+@media (max-width: 480px) {
+    .toast {
+        top: 1rem;
+        right: 1rem;
+        left: 1rem;
+        text-align: center;
+    }
+}
+
+/* Accessibility: Reduce motion if user prefers */
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+/* ---------- Upload Progress Bar ---------- */
+
+.upload-progress-container {
+    margin-top: 1rem;
+    max-width: 420px;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.upload-progress-track {
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background-color: #333;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+}
+
+.upload-progress-bar {
+    height: 100%;
+    width: 100%; /* final state = 100% */
+    background: linear-gradient(90deg, #1DB954, #1ed760);
+    transform-origin: left center;
+    animation: uploadProgressFill 1.6s ease-out forwards;
+}
+
+.upload-progress-text {
+    opacity: 0;
+    animation: uploadProgressText 1.2s ease-out forwards 0.4s;
+}
+
+/* fill animation */
+@keyframes uploadProgressFill {
+    0%   { transform: scaleX(0); }
+    60%  { transform: scaleX(0.85); }
+    100% { transform: scaleX(1); }
+}
+
+/* text fade-in animation */
+@keyframes uploadProgressText {
+    0%   { opacity: 0; transform: translateY(4px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
