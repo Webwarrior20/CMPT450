@@ -2,7 +2,6 @@ from utils.database import load_from_db, db_has_data
 
 UPLOADED_DATA = None
 
-
 def set_uploaded_data(df):
     global UPLOADED_DATA
     UPLOADED_DATA = df
