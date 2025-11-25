@@ -1,15 +1,28 @@
+from utils.database import load_from_db, db_has_data
+
 UPLOADED_DATA = None
-SPOTIFY_CLIENT = None
 
 
-# Uploaded Data
-def set_uploaded_data(data):
+def set_uploaded_data(df):
     global UPLOADED_DATA
-    UPLOADED_DATA = data
+    UPLOADED_DATA = df
 
 
 def get_uploaded_data():
-    return UPLOADED_DATA
+    global UPLOADED_DATA
+
+    # 1. If uploaded in-session → use it
+    if UPLOADED_DATA is not None:
+        return UPLOADED_DATA
+
+    # 2. If DB has saved history → load from DB automatically
+    if db_has_data():
+        print("📦 Loading data from SQLite DB…")
+        return load_from_db()
+
+    # 3. Otherwise empty state
+    return None
+
 
 
 # Spotify Client

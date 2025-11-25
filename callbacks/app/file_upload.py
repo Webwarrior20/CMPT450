@@ -1,7 +1,9 @@
 from dash import Input, Output, State, html
 from utils.parser import parse_uploaded_files
+from utils.database import save_df_to_db
 from app.store import set_uploaded_data
 import dash
+
 
 def register_upload_callbacks(app):
     @app.callback(
@@ -13,36 +15,48 @@ def register_upload_callbacks(app):
     )
     def handle_upload(contents, filenames):
         print("\n================ UPLOAD EVENT ==================")
-        print("📥 Upload callback triggered")
 
         if not contents or not filenames:
-            print("❌ Upload failed — contents or filenames missing.")
+            print("Upload failed — contents or filenames missing.")
             raise dash.exceptions.PreventUpdate
 
-        # Handle single-file uploads (Dash sends a string instead of list)
+        # Dash sends a single string for 1 file, list for multiple
         if not isinstance(contents, list):
             contents = [contents]
             filenames = [filenames]
 
-        print(f"📂 Total files received: {len(filenames)}")
-        for f in filenames:
-            print(f"   • {f}")
+        print(f"Files received: {filenames}")
 
-        # Pair files with content
         files = [{"name": n, "content": c} for n, c in zip(filenames, contents)]
 
-        print("\n⚙️ Parsing uploaded files…")
+        print("\nParsing uploaded file(s)…")
         df = parse_uploaded_files(files)
 
-        print(f"✅ Parsing complete.")
-        print(f"📊 Final DataFrame shape: {df.shape}")
-        print(f"🔎 Columns detected: {list(df.columns)}")
-        print("=================================================\n")
+        if df is None or df.empty:
+            print("Parsing produced no rows. Check file format or contents.")
+            error_children = html.Div(
+                className="upload-progress-container",
+                children=[
+                    html.Div(
+                        "Upload failed: no valid data found in the provided files.",
+                        className="upload-progress-text",
+                    )
+                ],
+            )
+            return error_children, dash.no_update
 
-        # Save the parsed data
+        print(f"Parsed {len(df)} rows")
+
+        # Save to DB (safe; only matching columns, dedup by track_uri)
+        try:
+            print("💾 Saving data into SQLite DB…")
+            save_df_to_db(df)
+        except Exception as e:
+            print(f"Failed saving to DB: {e}")
+
+        # Store in memory for this session
         set_uploaded_data(df)
 
-        # ---- UI: Full progress bar animation ----
         progress_children = html.Div(
             className="upload-progress-container",
             children=[
@@ -57,5 +71,4 @@ def register_upload_callbacks(app):
             ],
         )
 
-        # Redirect user automatically
         return progress_children, "/listening-journey"
