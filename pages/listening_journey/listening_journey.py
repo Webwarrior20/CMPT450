@@ -11,6 +11,10 @@ from .sections.energy_profile import energy_profile_section
 
 dash.register_page(__name__, path="/listening-journey", name="Your Listening Journey")
 
+"""
+Build the page layout. Accept an optional DataFrame; if None, try to load the current uploaded data.
+Returning a function as `layout` lets Dash evaluate the layout at render time (so fresh data is used).
+"""
 def create_listening_journey_layout():
     df = get_uploaded_dataframe()
 
@@ -25,4 +29,4 @@ def create_listening_journey_layout():
         ]
     )
 
-layout = create_listening_journey_layout()
+layout = lambda: create_listening_journey_layout()
