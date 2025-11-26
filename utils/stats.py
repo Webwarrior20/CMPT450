@@ -132,3 +132,20 @@ def get_mock_stats():
         "avg_song_length": "3:24",
         "listening_hours": 847,
     }
+
+def get_first_listen_date(df: pd.DataFrame):
+    ts_col = _first(df, ["played_at", "ts", "timestamp"])
+    if not ts_col:
+        return "N/A"
+    try:
+        df[ts_col] = pd.to_datetime(df[ts_col], errors="coerce")
+        first_date = df[ts_col].min()
+        if pd.isna(first_date):
+            return "N/A"
+        return first_date.strftime("%B %d, %Y")
+    except Exception:
+        return "N/A"
+
+def get_total_listening_time(df: pd.DataFrame):
+    duration_col = _first(df, ["duration_ms", "ms_played"])
+    return round(df[duration_col].sum() / 3_600_000, 2) if duration_col else 0

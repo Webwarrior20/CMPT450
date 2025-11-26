@@ -44,6 +44,8 @@ try:
         df = load_from_db()
         set_uploaded_data(df)
         print(f"Loaded {len(df)} rows from DB")
+
+
     else:
         print("DB is empty, waiting for uploads.")
 except Exception as e:

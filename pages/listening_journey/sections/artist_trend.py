@@ -1,7 +1,25 @@
 from dash import html, dcc
 
 
-def artist_trend_section():
+def artist_trend_section(df):
+    if df is None or df.empty:
+        return html.Div(
+            className="section",
+            children=[
+                html.H2("Artist Trends - Error", className="heading-1"),
+                html.Div(
+                    children=[
+                        html.P(
+                            """
+                            Dataframe being passed into the function is empty
+                            """,
+                            className="body"
+                        )
+                    ]
+                )
+            ]
+        )
+
     return html.Div(
         className="section",
         children=[
@@ -15,50 +33,5 @@ def artist_trend_section():
                     )
                 ]
             ),
-            # html.Div(
-            #     children=[
-            #         html.H3("Header - H2", className="heading-2"),
-            #         html.P(
-            #             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            #             className="body"
-            #         )
-            #     ]
-            # ),
-            # html.Div(
-            #     children=[
-            #         html.H4("Header - H3", className="heading-3"),
-            #         html.P(
-            #             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            #             className="body"
-            #         )
-            #     ]
-            # ),
-            # html.Div(
-            #     children=[
-            #         html.H3("Header - H2", className="heading-2"),
-            #         html.P(
-            #             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            #             className="body"
-            #         )
-            #     ]
-            # ),
-            # html.Div(
-            #     children=[
-            #         html.H4("Header - H3", className="heading-3"),
-            #         html.P(
-            #             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            #             className="body"
-            #         )
-            #     ]
-            # ),
-            # html.Div(
-            #     children=[
-            #         html.H5("Header - H4", className="heading-4"),
-            #         html.P(
-            #             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            #             className="body"
-            #         )
-            #     ]
-            # )
         ]
     )

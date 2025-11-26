@@ -25,16 +25,33 @@ def get_table_columns(table="streams"):
 def save_df_to_db(df: pd.DataFrame, table="streams"):
     inspector = inspect(engine)
 
+    # detect table existence and columns
     try:
         db_columns = {col["name"] for col in inspector.get_columns(table)}
+        table_exists = True
     except Exception:
+        table_exists = False
         print(f"Table '{table}' not found in DB.")
         return
 
+    #  If table doesn't exist, create it from the incoming DataFrame
+    if not table_exists:
+        try:
+            df_to_save = df.copy()
+            if "track_uri" in df_to_save.columns:
+                df_to_save = df_to_save.drop_duplicates(subset=["track_uri"], keep="last")
+            df_to_save.to_sql(table, engine, if_exists="replace", index=False)
+            print(f"Created table '{table}' with {len(df_to_save)} rows.")
+        except Exception as e:
+            print(f"DB table creation failed: {e}")
+        return
+
+    # If table exists, but has no columns
     if not db_columns:
         print(f"Table '{table}' has no columns. Check DB schema.")
         return
 
+    # Restrict dataframe to columns present in DB and append
     df_to_save = df.copy()
     df_to_save = df_to_save[[c for c in df_to_save.columns if c in db_columns]]
 
