@@ -1,8 +1,7 @@
 import dash
 from dash import html
 from layout.analytics_layout import analytics_layout
-from app.store import get_uploaded_data
-from utils.stats import compute_overview_stats   # uses real data
+from utils.stats import compute_overview_stats, get_uploaded_dataframe
 
 dash.register_page(__name__, path="/analytics/overview", name="Overview - Analytics")
 
@@ -13,25 +12,26 @@ def stat_card(title, value, color):
         style={"--card-color": color},
         children=[
             html.H2(title, className="caption semi-bold"),
-            html.P(value, className="heading-4 card-value"),
+            html.P(str(value), className="heading-4 card-value"),
         ],
     )
 
 
 def layout():
-    df = get_uploaded_data()
+    df = get_uploaded_dataframe()
 
-    # If user hasn't uploaded anything yet — show hint
     if df is None or df.empty:
         return analytics_layout(
             [
-                html.H2("No data uploaded yet.", className="warning"),
-                html.P("Upload a CSV or JSON file from Spotify to see insights.", className="body"),
+                html.H2("No data loaded yet.", className="warning"),
+                html.P(
+                    "Upload a Spotify CSV/JSON file on the landing page to see your analytics.",
+                    className="body",
+                ),
             ],
-            "Overview"
+            "Overview",
         )
 
-    # Compute real values from uploaded data
     stats = compute_overview_stats(df)
 
     return analytics_layout(
@@ -48,5 +48,5 @@ def layout():
                 ],
             )
         ],
-        "Overview"
+        "Overview",
     )
