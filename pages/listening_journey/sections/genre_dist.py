@@ -1,11 +1,11 @@
 from dash import html, dcc
 
 
-def introduction_section():
+def genre_dist_section():
     return html.Div(
         className="section",
         children=[
-            html.H2("Introduction", className="heading-1"),
+            html.H2("Genre Distribution", className="heading-1"),
             html.Div(
                 children=[
                     html.H3("Header - H2", className="heading-2"),
