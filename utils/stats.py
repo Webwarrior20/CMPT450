@@ -1,10 +1,7 @@
 import pandas as pd
 from app.store import get_uploaded_data
 
-
-# ---------------------------------------------------------
 # Get Cleaned Uploaded DataFrame
-# ---------------------------------------------------------
 def get_uploaded_dataframe() -> pd.DataFrame:
     df = get_uploaded_data()
     if df is None or not isinstance(df, pd.DataFrame):
@@ -12,9 +9,7 @@ def get_uploaded_dataframe() -> pd.DataFrame:
     return df
 
 
-# ---------------------------------------------------------
 # Overview Page Statistics
-# ---------------------------------------------------------
 def compute_overview_stats(df: pd.DataFrame):
     if df is None or df.empty:
         return _empty_stats()
@@ -71,9 +66,7 @@ def compute_overview_stats(df: pd.DataFrame):
     }
 
 
-# ---------------------------------------------------------
 # Listen Streak
-# ---------------------------------------------------------
 def compute_listening_streak(df: pd.DataFrame):
     ts_col = _first(df, ["played_at", "ts", "timestamp"])
     if not ts_col:
@@ -102,9 +95,7 @@ def compute_listening_streak(df: pd.DataFrame):
         return 0
 
 
-# ---------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------
 def _first(df: pd.DataFrame, candidates):
     for c in candidates:
         if c in df.columns:

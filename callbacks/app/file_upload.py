@@ -1,6 +1,5 @@
 from dash import Input, Output, State, html
 from utils.parser import parse_uploaded_files
-from utils.database import save_df_to_db
 from app.store import set_uploaded_data
 import dash
 
@@ -46,13 +45,6 @@ def register_upload_callbacks(app):
             return error_children, dash.no_update
 
         print(f"Parsed {len(df)} rows")
-
-        # Save to DB (safe; only matching columns, dedup by track_uri)
-        try:
-            print("💾 Saving data into SQLite DB…")
-            save_df_to_db(df)
-        except Exception as e:
-            print(f"Failed saving to DB: {e}")
 
         # Store in memory for this session
         set_uploaded_data(df)
