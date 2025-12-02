@@ -11,6 +11,21 @@ def get_uploaded_dataframe() -> pd.DataFrame:
         return pd.DataFrame()
     return df
 
+# ---------------------------------------------------------
+# Get Cleaned Uploaded DataFrame Filtered to Songs the user Played
+# Linked by track_uri
+# ---------------------------------------------------------
+def get_combined_listened_dataframe() -> pd.DataFrame:
+    df = get_uploaded_dataframe()
+    if df is None or df.empty:
+        return pd.DataFrame()
+
+    duration_col = _first(df, ["duration_ms", "ms_played"])
+    if not duration_col:
+        return pd.DataFrame()
+
+    listened_df = df[df[duration_col] > 0].copy()
+    return listened_df
 
 # ---------------------------------------------------------
 # Overview Page Statistics

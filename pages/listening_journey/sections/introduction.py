@@ -1,6 +1,7 @@
 from dash import html, dcc
-import plotly.express as px
 from utils.stats import get_first_listen_date, get_total_listening_time, get_uploaded_dataframe
+import pandas as pd
+import plotly.express as px
 
 """
 Build the introduction section. Accepts a pandas dataframe as input.
@@ -75,8 +76,6 @@ def introduction_section(df=None):
                 ],
                 className="graph-section"
             )
-
-
         ]
     )
 
@@ -86,14 +85,11 @@ Build a monthly hours-played line chart from the provided DataFrame.
 Falls back to computing 'hours_played' from common ms columns if missing.
 Returns a Plotly Figure (empty Figure if data is insufficient).
 """
-def total_listening_time_line_graph(df, spotify_green=None, spotify_dark=None):
-
-    import pandas as pd
-    import plotly.express as px
+def total_listening_time_line_graph(df):
 
     # sensible defaults for Spotify colors
-    spotify_green = spotify_green or "#1DB954"
-    spotify_dark = spotify_dark or "#191414"
+    spotify_green = "#1DB954"
+    spotify_dark = "#191414"
 
     if df is None or df.empty:
         return px.line()  # empty figure

@@ -1,5 +1,5 @@
 import dash
-from utils.stats import get_uploaded_dataframe
+from utils.stats import get_uploaded_dataframe, get_combined_listened_dataframe
 from layout.listening_journey_layout import listening_journey_layout
 from .sections.introduction import introduction_section
 from .sections.listening_pattern import listening_pattern_section
@@ -17,12 +17,13 @@ Returning a function as `layout` lets Dash evaluate the layout at render time (s
 """
 def create_listening_journey_layout():
     df = get_uploaded_dataframe()
+    df_filtered = get_combined_listened_dataframe()
 
     return listening_journey_layout(
         [
             introduction_section(df),
             listening_pattern_section(df),
-            genre_dist_section(df),
+            #genre_dist_section(df, df_filtered),
             artist_trend_section(df),
             song_trend_section(df),
             energy_profile_section(df)
