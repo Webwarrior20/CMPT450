@@ -1,3 +1,13 @@
 /data
 .env
 .idea
+__pycache__/
+*.pyc
+/.idea/CMPT450.iml
+/.idea/copilot.data.migration.agent.xml
+/.idea/copilot.data.migration.ask.xml
+/.idea/copilot.data.migration.ask2agent.xml
+/.idea/copilot.data.migration.edit.xml
+/.idea/vcs.xml
+.cache
+.spotify_cache

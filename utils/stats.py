@@ -8,6 +8,21 @@ def get_uploaded_dataframe() -> pd.DataFrame:
         return pd.DataFrame()
     return df
 
+# ---------------------------------------------------------
+# Get Cleaned Uploaded DataFrame Filtered to Songs the user Played
+# Linked by track_uri
+# ---------------------------------------------------------
+def get_combined_listened_dataframe() -> pd.DataFrame:
+    df = get_uploaded_dataframe()
+    if df is None or df.empty:
+        return pd.DataFrame()
+
+    duration_col = _first(df, ["duration_ms", "ms_played"])
+    if not duration_col:
+        return pd.DataFrame()
+
+    listened_df = df[df[duration_col] > 0].copy()
+    return listened_df
 
 # Overview Page Statistics
 def compute_overview_stats(df: pd.DataFrame):
@@ -123,3 +138,20 @@ def get_mock_stats():
         "avg_song_length": "3:24",
         "listening_hours": 847,
     }
+
+def get_first_listen_date(df: pd.DataFrame):
+    ts_col = _first(df, ["played_at", "ts", "timestamp"])
+    if not ts_col:
+        return "N/A"
+    try:
+        df[ts_col] = pd.to_datetime(df[ts_col], errors="coerce")
+        first_date = df[ts_col].min()
+        if pd.isna(first_date):
+            return "N/A"
+        return first_date.strftime("%B %d, %Y")
+    except Exception:
+        return "N/A"
+
+def get_total_listening_time(df: pd.DataFrame):
+    duration_col = _first(df, ["duration_ms", "ms_played"])
+    return round(df[duration_col].sum() / 3_600_000, 2) if duration_col else 0
