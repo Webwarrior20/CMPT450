@@ -1,0 +1,58 @@
+.genre-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    font-size: 16px;
+    color: #e5e5e5;
+}
+
+.genre-row:last-child {
+    border-bottom: none;
+}
+
+.genre-name {
+    font-weight: 500;
+    color: #fff;
+    text-transform: capitalize;
+}
+
+.genre-percent {
+    font-weight: 400;
+    color: #bbb;
+}
+
+.genre-stats-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.stats-card {
+    flex: 1;
+    background: #111;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.stats-title {
+    font-size: 14px;
+    color: #bbb;
+    margin-bottom: 4px;
+}
+
+.stats-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.stats-sub {
+    font-size: 14px;
+    color: #888;
+    margin-top: 4px;
+}

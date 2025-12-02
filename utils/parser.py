@@ -4,9 +4,7 @@ import base64
 import zipfile
 import pandas as pd
 
-# ================================================================
 # Canonical column map → unified schema
-# ================================================================
 CANONICAL_COLUMNS = {
     "ts": "ts",
     "endTime": "ts",
@@ -42,9 +40,7 @@ CANONICAL_COLUMNS = {
 }
 
 
-# ================================================================
 # Normalize DF
-# ================================================================
 def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty:
         return pd.DataFrame()
@@ -67,9 +63,7 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# ================================================================
 # JSON parser
-# ================================================================
 def read_json_string(decoded: bytes) -> pd.DataFrame:
     text = decoded.decode("utf-8", errors="ignore")
 
@@ -89,20 +83,15 @@ def read_json_string(decoded: bytes) -> pd.DataFrame:
             except Exception:
                 pass
 
-    return normalize_columns(pd.DataFrame(data))
+    return pd.DataFrame(data)
 
-
-# ================================================================
 # CSV parser
-# ================================================================
 def parse_csv_bytes(decoded: bytes) -> pd.DataFrame:
     df = pd.read_csv(io.BytesIO(decoded))
-    return normalize_columns(df)
+    return df
 
 
-# ================================================================
 # ZIP parser
-# ================================================================
 def parse_zip_bytes(decoded: bytes) -> pd.DataFrame:
     dfs = []
     with zipfile.ZipFile(io.BytesIO(decoded)) as z:
@@ -118,9 +107,7 @@ def parse_zip_bytes(decoded: bytes) -> pd.DataFrame:
     return pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
 
-# ================================================================
 # Main upload handler
-# ================================================================
 def parse_uploaded_files(files):
     dfs = []
 
