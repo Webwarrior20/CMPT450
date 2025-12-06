@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 import pandas as pd
-import os
 
 DB_PATH = "data/spotify.db"
 
