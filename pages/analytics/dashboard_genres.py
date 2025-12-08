@@ -10,9 +10,20 @@ dash.register_page(__name__, path="/analytics/genres", name="Your Top Genres - A
 layout = analytics_layout(
     [
         time_select_period(),
-        dcc.Store(id="selected-time-period"),
-        dcc.Graph(id="top-genres-graph"),
-        html.Div(id="genre-breakdown"),
+        html.Div(
+            children=[
+                html.Div(
+                    children=[
+                        html.H2("Genre Distribution"),
+                        dcc.Store(id="selected-time-period"),
+                        dcc.Graph(id="top-genres-graph"),
+                    ],
+                    className="genre-top-genre"
+                ),
+                html.Div(id="genre-breakdown"),
+            ],
+            className="genre-graphs"
+        ),
         html.Div(id="genre-stats-row", className="genre-stats-row"),
     ],
     "Top Genres"
@@ -30,14 +41,34 @@ def update_genre_chart(time_period):
     if genre_counts.empty:
         return px.bar(title="No genre data found")
 
+    df = genre_counts.head(5)
+
     fig = px.bar(
-        genre_counts.head(5),
+        df,
         x="genre",
         y="genre_count",
-        title="Your Top Genres"
+        color_discrete_sequence=["#1ED760"],
     )
 
-    fig.update_layout(xaxis_title=None, yaxis_title="Count")
+    fig.update_layout(
+        title=None,
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+        margin=dict(l=20, r=20, t=20, b=60),
+        xaxis=dict(
+            title=None,
+            tickfont=dict(size=16, color="white"),
+        ),
+        yaxis=dict(
+            title=None,
+            tickfont=dict(size=16, color="white"),
+            gridcolor="rgba(255,255,255,0.05)",
+            zerolinecolor="rgba(255,255,255,0.1)"
+        )
+    )
+
+    fig.update_traces(marker_line_width=0)
 
     return fig
 
@@ -56,12 +87,30 @@ def update_genre_breakdown(time_period):
     breakdown = get_top5_breakdown(genre_counts)
 
     rows = []
+
     for row in breakdown:
+        pct_num = row["pct"]
+        pct = f"{pct_num}%"
+
         rows.append(
             html.Div(
                 [
-                    html.Div(row["genre"], className="genre-name"),
-                    html.Div(f"{row['pct']}%", className="genre-percent")
+                    html.Div(
+                        children=[
+                            html.Div(row["genre"].capitalize(), className="genre-name"),
+                            html.Div(pct, className="genre-percent"),
+                        ],
+                        className="genre-bar-label"
+                    ),
+                    html.Div(
+                        [
+                            html.Div(
+                                className="genre-bar-fill",
+                                style={"width": pct}
+                            )
+                        ],
+                        className="genre-bar"
+                    )
                 ],
                 className="genre-row"
             )
