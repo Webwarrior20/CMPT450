@@ -14,8 +14,8 @@ def stat_card(title, value, color):
         className="stat-card",
         style={"--card-color": color},
         children=[
-            html.H2(title, className="caption semi-bold"),
-            html.P(str(value), className="heading-4 card-value"),
+            html.H2(title, className="caption semi-bold capitalize"),
+            html.P(str(value), className="heading-4 card-value capitalize"),
         ],
     )
 

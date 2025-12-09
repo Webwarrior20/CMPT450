@@ -1,5 +1,7 @@
 import pandas as pd
+import ast
 from app.store import get_uploaded_data
+from app.store import get_main_database
 
 # Get Cleaned Uploaded DataFrame
 def get_uploaded_dataframe() -> pd.DataFrame:
@@ -13,26 +15,55 @@ def compute_overview_stats(df: pd.DataFrame):
     if df is None or df.empty:
         return _empty_stats()
 
+    # Merge listening history with metadata so genres exist
+    db = get_main_database()
+    if db is None or db.empty:
+        return _empty_stats()
+
+    merged = df.merge(
+        db,
+        left_on="spotify_track_uri",
+        right_on="track_uri",
+        how="left"
+    )
+
+    def parse_genres(val):
+        if pd.isna(val):
+            return []
+        if isinstance(val, list):
+            return val
+        if isinstance(val, str):
+            try:
+                out = ast.literal_eval(val)
+                if isinstance(out, list):
+                    return out
+            except:
+                pass
+            return [val]
+        return []
+
+    merged["parsed_genres"] = merged["artist_genres"].apply(parse_genres)
+    exploded = merged.explode("parsed_genres")
+
+    # Clean genre strings
+    exploded["parsed_genres"] = exploded["parsed_genres"].apply(
+        lambda g: g.strip() if isinstance(g, str) else g
+    )
+    exploded = exploded.dropna(subset=["parsed_genres"])
+    exploded = exploded[exploded["parsed_genres"] != ""]
+
+    if exploded.empty:
+        top_genre = "N/A"
+    else:
+        top_genre = exploded["parsed_genres"].value_counts().idxmax()
+
+    # ----------------------------------
+
+    # Top artist
     track_col = _first(df, ["track", "track_name", "master_metadata_track_name"])
     artist_col = _first(df, ["artist", "artist_name", "master_metadata_album_artist_name"])
     duration_col = _first(df, ["duration_ms", "ms_played"])
-    genre_col = _first(df, ["artist_genres", "genres", "genre"])
 
-    # Top genre
-    top_genre = "N/A"
-    if genre_col:
-        series = (
-            df[genre_col]
-            .dropna()
-            .astype(str)
-            .str.split(",")
-            .explode()
-            .str.strip()
-        )
-        if not series.empty:
-            top_genre = series.value_counts().idxmax()
-
-    # Top artist
     if artist_col:
         top_artist = df[artist_col].dropna().astype(str).value_counts().idxmax()
     else:
@@ -41,7 +72,7 @@ def compute_overview_stats(df: pd.DataFrame):
     # Discoveries
     discoveries = df[track_col].nunique() if track_col else 0
 
-    # Average length
+    # Average song length
     if duration_col:
         avg_ms = df[duration_col].mean()
         avg_sec = int(avg_ms / 1000)
@@ -49,7 +80,7 @@ def compute_overview_stats(df: pd.DataFrame):
     else:
         avg_length = "0:00"
 
-    # Total hours
+    # Listening time hours
     listening_time_hours = round(df[duration_col].sum() / 3_600_000, 2) if duration_col else 0
 
     # Streak
