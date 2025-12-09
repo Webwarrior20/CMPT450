@@ -1,19 +1,12 @@
 from dash import html, dcc
 from utils.stats import get_first_listen_date, get_total_listening_time, get_uploaded_dataframe
+from utils.css_vars import load_css_variables
 from pathlib import Path
 import re
 import pandas as pd
 import plotly.express as px
 
 #dash.register_page(__name__, path="/listening-journey#introduction", name="Listening Journey - Introduction")
-
-def _load_css_variables(path: str) -> dict:
-    try:
-        text = Path(path).read_text(encoding="utf-8")
-    except Exception:
-        return {}
-    pairs = re.findall(r'(--[\w-]+)\s*:\s*([^;]+);', text)
-    return {name: value.strip() for name, value in pairs}
 
 """
 Build the introduction section. Accepts a pandas dataframe as input.
@@ -28,12 +21,13 @@ def introduction_section(df=None):
             html.Div(children=[html.P("Dataframe being passed into the function is empty", className="body")])
         ])
 
-    css = _load_css_variables("assets/styles/variables.css")
+    css = load_css_variables("assets/styles/variables.css")
     green500 = css.get("--color-green-500", "#1ED760")
 
     first_listen_date = get_first_listen_date(df)
     total_time = get_total_listening_time(df)
     total_time_graph = total_listening_time_line_graph(df)
+
     return html.Div(
         id="introduction",
         className="section",
@@ -101,7 +95,7 @@ Returns a Plotly Figure (empty Figure if data is insufficient).
 """
 def total_listening_time_line_graph(df):
     # load CSS variables from `assets/styles/variables.css`
-    css = _load_css_variables("assets/styles/variables.css")
+    css = load_css_variables("assets/styles/variables.css")
     green100 = css.get("--color-green-100", "#93D5A3")
     green500 = css.get("--color-green-500", "#1ED760")
     black = css.get("--color-black", "#181414")
