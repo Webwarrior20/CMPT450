@@ -1,5 +1,5 @@
 import dash
-from app.store import get_main_database
+from app.store import get_main_database, get_uploaded_data
 from utils.stats import get_uploaded_dataframe
 from layout.listening_journey_layout import listening_journey_layout
 from .sections.introduction import introduction_section
@@ -20,14 +20,23 @@ def create_listening_journey_layout():
     df = get_uploaded_dataframe()
     db = get_main_database()
 
+    # Merge with metadata to get genres
+    lh = get_uploaded_data()
+    merged_df = lh.merge(
+        db,
+        left_on="spotify_track_uri",
+        right_on="track_uri",
+        how="left"
+    )
+
     return listening_journey_layout(
         [
             introduction_section(df),
             listening_pattern_section(df),
-            genre_dist_section(df, db),
+            genre_dist_section(merged_df),
             artist_trend_section(df),
             song_trend_section(df),
-            energy_profile_section(df, db)
+            energy_profile_section(merged_df)
         ]
     )
 

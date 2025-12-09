@@ -152,7 +152,7 @@ def total_listening_time_line_graph(df):
         markers=True,
         labels={"hours": "Hours Played", "month_dt": "Month"},
         title=None,
-        line_shape="linear",
+        line_shape="spline",
     )
 
     # Use CSS variable colors: line and main markers -> grey600

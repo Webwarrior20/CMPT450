@@ -1,13 +1,12 @@
 from typing import List
 from dash import html, dcc
 from collections import Counter, defaultdict
-from app.store import get_uploaded_data
 from utils.css_vars import load_css_variables
 import pandas as pd
 import plotly.graph_objects as go
 import ast
 
-def genre_dist_section(df, db):
+def genre_dist_section(df):
     if df is None or df.empty:
         return html.Div(
             className="section",
@@ -25,14 +24,6 @@ def genre_dist_section(df, db):
                 )
             ]
         )
-    # Merge with metadata to get genres
-    lh = get_uploaded_data()
-    merged_df = lh.merge(
-        db,
-        left_on="spotify_track_uri",
-        right_on="track_uri",
-        how="left"
-    )
 
     return html.Div(
         className="section",
@@ -64,7 +55,7 @@ def genre_dist_section(df, db):
                 children=[
                     dcc.Graph(
                         figure=sankey_genre_subgenre(
-                            merged_df,
+                            df,
                         ),
                         config={"displayModeBar": False},
                     )
@@ -101,7 +92,7 @@ def genre_dist_section(df, db):
                 children=[
                     dcc.Graph(
                         figure=genre_treemap(
-                            merged_df,
+                            df,
                         ),
                         config={"displayModeBar": False},
                     )
