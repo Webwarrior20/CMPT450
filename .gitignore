@@ -1,4 +1,4 @@
-/data/spotify.db
+/data
 .env
 .idea
 __pycache__/
