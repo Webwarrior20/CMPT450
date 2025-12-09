@@ -6,6 +6,11 @@ NAV = {
         "href": "/listening-journey",
         "sections": [
             ("introduction", "Introduction", "/listening-journey#introduction"),
+            ("listening-pattern", "Listening Pattern", "/listening-journey#listening-pattern"),
+            ("genre-distribution", "Genre Distribution", "/listening-journey#genre-distribution"),
+            ("artist-trend", "Artist Trend", "/listening-journey#artist-trend"),
+            ("song-trend", "Song Trend", "/listening-journey#song-trend"),
+            ("energy-profile", "Energy Profile", "/listening-journey#energy-profile"),
         ],
     },
     "analytics": {
@@ -33,14 +38,23 @@ def sidebar(active_page="listening-journey", active_section="overview"):
 
     sublinks = []
     if active_page in NAV:
-        sublinks = [
-            dcc.Link(
-                label,
-                href=href,
-                className=f"sidebar-link{' active' if section_key == active_section else ''} bold",
-            )
-            for section_key, label, href in NAV[active_page]["sections"]
-        ]
+        sublinks = []
+        for section_key, label, href in NAV[active_page]["sections"]:
+           sublinks.append(
+               dcc.Link(
+                   label,
+                   href=href,
+                   className=f"sidebar-link{' active' if section_key == active_section else ''} bold",
+               )
+           )
+        # sublinks = [
+        #     dcc.Link(
+        #         label,
+        #         href=href,
+        #         className=f"sidebar-link{' active' if section_key == active_section else ''} bold",
+        #     )
+        #     for section_key, label, href in NAV[active_page]["sections"]
+        # ]
 
     return html.Div(
         className="sidebar",

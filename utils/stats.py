@@ -10,22 +10,6 @@ def get_uploaded_dataframe() -> pd.DataFrame:
         return pd.DataFrame()
     return df
 
-# ---------------------------------------------------------
-# Get Cleaned Uploaded DataFrame Filtered to Songs the user Played
-# Linked by track_uri
-# ---------------------------------------------------------
-def get_combined_listened_dataframe() -> pd.DataFrame:
-    df = get_uploaded_dataframe()
-    if df is None or df.empty:
-        return pd.DataFrame()
-
-    duration_col = _first(df, ["duration_ms", "ms_played"])
-    if not duration_col:
-        return pd.DataFrame()
-
-    listened_df = df[df[duration_col] > 0].copy()
-    return listened_df
-
 # Overview Page Statistics
 def compute_overview_stats(df: pd.DataFrame):
     if df is None or df.empty:
@@ -186,3 +170,54 @@ def get_first_listen_date(df: pd.DataFrame):
 def get_total_listening_time(df: pd.DataFrame):
     duration_col = _first(df, ["duration_ms", "ms_played"])
     return round(df[duration_col].sum() / 3_600_000, 2) if duration_col else 0
+
+def get_most_listened_day(df: pd.DataFrame):
+    """
+    Find out which day of the week the user listens to music the most.
+    """
+    ts_col = _first(df, ["played_at", "ts", "timestamp"])
+    if not ts_col:
+        return "N/A"
+    try:
+        df[ts_col] = pd.to_datetime(df[ts_col], errors="coerce")
+        df["weekday"] = df[ts_col].dt.day_name()
+        most_listened_day = df["weekday"].value_counts().idxmax()
+        return most_listened_day
+    except Exception:
+        return "N/A"
+
+def get_most_listened_hour(df: pd.DataFrame):
+    """
+    Returns an array of hours (0-23) during which the user listens to music the most sorted from most to least.
+    """
+    ts_col = _first(df, ["played_at", "ts", "timestamp"])
+    if not ts_col:
+        return []
+    try:
+        df[ts_col] = pd.to_datetime(df[ts_col], errors="coerce")
+        df["hour"] = df[ts_col].dt.hour
+        hour_counts = df["hour"].value_counts().sort_values(ascending=False)
+        return hour_counts.index.tolist()
+    except Exception:
+        return []
+
+def get_most_listened_overall_day(df: pd.DataFrame):
+    """
+    Find out which specific date the user listened to the most music.
+    Returns value a tuple of (date string, total duration in ms).
+    """
+    ts_col = _first(df, ["played_at", "ts", "timestamp"])
+    duration_col = _first(df, ["duration_ms", "ms_played"])
+    if not ts_col or not duration_col:
+        return ("N/A", 0)
+    try:
+        df[ts_col] = pd.to_datetime(df[ts_col], errors="coerce")
+        df["date_only"] = df[ts_col].dt.date
+        daily_listening = df.groupby("date_only", observed=False)[duration_col].sum()
+        if daily_listening.empty:
+            return ("N/A", 0)
+        most_listened_date = daily_listening.idxmax()
+        total_duration = daily_listening.max()
+        return (most_listened_date.strftime("%B %d, %Y"), total_duration)
+    except Exception:
+        return ("N/A", 0)

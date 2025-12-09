@@ -1,7 +1,10 @@
 from dash import html, dcc
 from utils.stats import get_first_listen_date, get_total_listening_time, get_uploaded_dataframe
+from utils.css_vars import load_css_variables
 import pandas as pd
 import plotly.express as px
+
+#dash.register_page(__name__, path="/listening-journey#introduction", name="Listening Journey - Introduction")
 
 """
 Build the introduction section. Accepts a pandas dataframe as input.
@@ -11,27 +14,20 @@ def introduction_section(df=None):
         df = get_uploaded_dataframe()
 
     if df is None or df.empty:
-        return html.Div(
-            className="section",
-            children=[
-                html.H2("Introduction - Error", className="heading-1"),
-                html.Div(
-                    children=[
-                        html.P(
-                            """
-                            Dataframe being passed into the function is empty
-                            """,
-                            className="body"
-                        )
-                    ]
-                )
-            ]
-        )
+        return html.Div(className="section", children=[
+            html.H2("Introduction - Error", className="heading-1"),
+            html.Div(children=[html.P("Dataframe being passed into the function is empty", className="body")])
+        ])
+
+    css = load_css_variables("assets/styles/variables.css")
+    green500 = css.get("--color-green-500", "#1ED760")
 
     first_listen_date = get_first_listen_date(df)
     total_time = get_total_listening_time(df)
     total_time_graph = total_listening_time_line_graph(df)
+
     return html.Div(
+        id="introduction",
         className="section",
         children=[
             html.H2("Introduction", className="heading-1"),
@@ -49,22 +45,12 @@ def introduction_section(df=None):
                 ]
             ),
 
-            # First listen date
+            # Heading for the total listening time graph
             html.Div(
                 children=[
                     html.H3(
-                        ["You first hit play on ", html.Span(first_listen_date, className="emphasis")],
-                        className="body",
-                    )
-                ]
-            ),
-
-            # Total listening time
-            html.Div(
-                children=[
-                    html.H3(
-                        ["Your total listening time on Spotify is ", html.Span(total_time, className="emphasis")],
-                        className="body",
+                        "Monthly Listening Time Over Your Spotify Journey",
+                        className="heading-3"
                     )
                 ]
             ),
@@ -72,9 +58,29 @@ def introduction_section(df=None):
             # Graph under the total listening time
             html.Div(
                 children=[
-                    dcc.Graph(figure=total_time_graph, config={"displayModeBar": False})
+                    dcc.Graph(
+                        figure=total_time_graph,
+                        config={"displayModeBar": True},
+                        style={"backgroundColor": green500}
+                    )
                 ],
                 className="graph-section"
+            ),
+
+            # First listen date and total listening time
+            html.P(
+                [
+                    html.Span("You first hit play on ", className="body"),
+                    html.B(first_listen_date, className="body"),
+                    html.Br(),
+                    html.Span("You've listened to Spotify for ", className="body"),
+                    html.B(total_time, className="body"),
+                    html.B(" Hours", className="body"),
+                    html.Br(),
+                    html.Span("That is equivalent to ", className="body"),
+                    html.B(f"{total_time / 24:.1f} Days!", className="body"),
+                ],
+                className=None,
             )
         ]
     )
@@ -86,10 +92,13 @@ Falls back to computing 'hours_played' from common ms columns if missing.
 Returns a Plotly Figure (empty Figure if data is insufficient).
 """
 def total_listening_time_line_graph(df):
-
-    # sensible defaults for Spotify colors
-    spotify_green = "#1DB954"
-    spotify_dark = "#191414"
+    # load CSS variables from `assets/styles/variables.css`
+    css = load_css_variables("assets/styles/variables.css")
+    green100 = css.get("--color-green-100", "#93D5A3")
+    green500 = css.get("--color-green-500", "#1ED760")
+    black = css.get("--color-black", "#181414")
+    grey600 = css.get("--color-grey-600", "#211D1D")
+    grey400 = css.get("--color-grey-700", "#211D1D")
 
     if df is None or df.empty:
         return px.line()  # empty figure
@@ -98,7 +107,6 @@ def total_listening_time_line_graph(df):
 
     # ensure timestamp column exists and is datetime
     if "ts" not in df.columns:
-        # try common alternatives
         for alt in ("played_at", "timestamp", "date"):
             if alt in df.columns:
                 df = df.rename(columns={alt: "ts"})
@@ -117,7 +125,6 @@ def total_listening_time_line_graph(df):
         else:
             return px.line()
 
-    # build monthly aggregation
     df["month"] = df["ts"].dt.to_period("M").astype(str)
     monthly_play = (
         df.groupby("month", observed=False)
@@ -129,7 +136,6 @@ def total_listening_time_line_graph(df):
         return px.line()
 
     monthly_play["month_dt"] = pd.to_datetime(monthly_play["month"])
-    # protective indexing for max row
     try:
         max_idx = monthly_play["hours"].idxmax()
         max_row = monthly_play.loc[max_idx]
@@ -138,52 +144,75 @@ def total_listening_time_line_graph(df):
 
     avg_hours = monthly_play["hours"].mean()
 
-    # Create line chart
+    # create line chart without a title (use page heading), set markers
     fig = px.line(
         monthly_play,
         x="month_dt",
         y="hours",
         markers=True,
         labels={"hours": "Hours Played", "month_dt": "Month"},
-        title="Total Personal Listening Time on Spotify Since 2020 to Present",
-        line_shape="linear",
+        title=None,
+        line_shape="spline",
     )
 
-    # Style line and markers
-    fig.update_traces(line_color=spotify_green, marker=dict(size=8, color=spotify_green))
+    # Use CSS variable colors: line and main markers -> grey600
+    fig.update_traces(mode="lines", line=dict(color=grey600, width=2)
+                      #, marker=dict(size=8, color=grey600, line=dict(width=0))
+                      )
 
-    # Highlight the highest point if available
+    # Highlight the highest point using --color-black
     if max_row is not None:
         fig.add_scatter(
             x=[max_row["month_dt"]],
             y=[max_row["hours"]],
             mode="markers+text",
-            marker=dict(color="#006400", size=14, symbol="circle"),
+            marker=dict(color=black, size=14, symbol="circle", line=dict(color=black, width=2)),
             text=[f"{max_row['hours']:.1f} Hours"],
             textposition="top center",
-            textfont=dict(size=16, family="Open Sans", color="#006400"),
+            textfont=dict(size=12, color=black),
             showlegend=False,
         )
 
-    # Add average line
     fig.add_hline(
         y=avg_hours,
         line_dash="dash",
-        line_color="grey",
+        line_color=grey400,
         opacity=0.6,
-        annotation_text="Average Listening Time",
+        annotation_text="Avg. Listening Time",
         annotation_position="top right",
-        annotation_font=dict(size=14, family="Open Sans", color="grey"),
+        annotation_font=dict(size=12, color=grey400),
     )
 
-    # Update layout aesthetics
+    # Apply background colors from CSS variables and layout tweaks to avoid cutoff
     fig.update_layout(
-        title_font=dict(family="Open Sans", size=22, color=spotify_dark),
-        font=dict(family="Open Sans", size=14, color=spotify_dark),
-        plot_bgcolor="white",
-        paper_bgcolor="white",
-        xaxis=dict(showgrid=False, showline=True, linecolor="lightgrey", tickformat="%b %Y"),
-        yaxis=dict(showgrid=False, showline=True, linecolor="lightgrey"),
+        height=360,
+        title_font=dict(size=18, color=black),
+        font=dict(size=13, color=black),
+        plot_bgcolor=green500,
+        paper_bgcolor=green500,
+        margin=dict(l=20, r=20, t=20, b=20),
+        xaxis=dict(
+            showgrid=False,
+            showline=True,
+            linecolor="rgba(0,0,0,0.12)",
+            tickformat="%b %Y",
+            tickangle=-45,
+            tickfont=dict(size=11, color=black),
+            tickmode="auto",
+        ),
+        yaxis=dict(
+            showgrid=False,
+            showline=True,
+            linecolor="rgba(0,0,0,0.12)",
+            tickfont=dict(size=11, color=black),
+        ),
+        hovermode="x unified",
+        hoverlabel=dict(
+            bgcolor=green100,
+            font_size=12,
+            font_color=black,
+            bordercolor=black
+        ),
     )
 
     return fig

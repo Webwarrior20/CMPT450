@@ -1,11 +1,12 @@
 from typing import List
 from dash import html, dcc
 from collections import Counter, defaultdict
+from utils.css_vars import load_css_variables
 import pandas as pd
 import plotly.graph_objects as go
 import ast
 
-def genre_dist_section(df, df_filtered):
+def genre_dist_section(df):
     if df is None or df.empty:
         return html.Div(
             className="section",
@@ -23,30 +24,93 @@ def genre_dist_section(df, df_filtered):
                 )
             ]
         )
+
     return html.Div(
         className="section",
         children=[
             html.H2("Genre Distribution", className="heading-1"),
             html.Div(
                 children=[
-                    html.H3("Header - H2", className="heading-2"),
                     html.P(
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                        " Genres play a significant role in shaping our musical preferences and listening habits. "
+                        "In this section, we explore the distribution of genres in your listening history, "
+                        "providing insights into your favorite styles of music and how they contribute to your overall "
+                        "musical taste. Discover the variety and depth of genres that define your unique listening journey",
+
                         className="body"
                     )
                 ]
             ),
+            # Genre Breakdown Sankey
+            html.Div(
+                children=[
+                    html.H3(
+                        "Breaking Down Your Genres",
+                        className="heading-3"
+                    )
+                ]
+            ),
+
             html.Div(
                 children=[
                     dcc.Graph(
                         figure=sankey_genre_subgenre(
-                            df_filtered,
-                            title="Your Genre Breakdown"
+                            df,
                         ),
                         config={"displayModeBar": False},
                     )
                 ]
-            )
+            ),
+
+            html.Div(
+                children=[
+                    html.P(
+                        " You have listened to a diverse range of genres over your Spotify journey. "
+                        "The Sankey diagram above illustrates the relationship between the main genres and their subgenres "
+                        "based on your listening history. The left side represents the main genres, while the right side "
+                        "displays the subgenres associated with each main genre. The width of the connections "
+                        "indicates the volume of songs you've listened to within each genre pairing. This visualization "
+                        "provides a clear overview of your genre preferences and how they interconnect, "
+                        "highlighting the richness of your musical taste.",
+
+                        className="body"
+                    )
+                ]
+            ),
+
+            # Heading for Top Genres Treemap
+            html.Div(
+                children=[
+                    html.H3(
+                        "Your Top Genres",
+                        className="heading-3"
+                    )
+                ]
+            ),
+
+            html.Div(
+                children=[
+                    dcc.Graph(
+                        figure=genre_treemap(
+                            df,
+                        ),
+                        config={"displayModeBar": False},
+                    )
+                ]
+            ),
+
+            html.Div(
+                children=[
+                    html.P(
+                        " The treemap above showcases your top genres based on the number of songs you've listened to in each genre. "
+                        "Each rectangle represents a genre, with the size of the rectangle corresponding to the volume of songs "
+                        "you've enjoyed within that genre. Larger rectangles indicate genres that dominate your listening habits, "
+                        "while smaller rectangles represent less frequently played genres. This visualization provides a quick and "
+                        "intuitive overview of your genre preferences, allowing you to see at a glance which styles of music resonate most with you.",
+                        className="body"
+                    )
+                ]
+            ),
         ]
     )
 
@@ -76,19 +140,19 @@ def sankey_genre_subgenre(
     top_n_main: int = 8,
     top_m_sub_per_main: int = 10,
     right_spacing_factor: float = 1.5,
-    title: str = "Songs → Main Genre → Subgenre Sankey"
 ) -> go.Figure:
     """
     Build a Sankey diagram mapping Songs -> Main Genre -> Subgenre.
     Includes single-word genres as mains (no subnodes) and places nodes
     with explicit `node.x` and `node.y` so right-most (subgenre)
     nodes get extra vertical spacing controlled by `right_spacing_factor`.
-
-    New behavior: if a multi-word genre string appears only once across the
-    dataset, treat that exact string as a main genre (no main->sub edge).
     """
     if df_linked is None or df_linked.empty or 'artist_genres' not in df_linked.columns:
         raise ValueError("No `artist_genres` column data available.")
+
+    css = load_css_variables("assets/styles/variables.css")
+    green500 = css.get("--color-green-500", "#1ED760")
+
 
     # First pass: count exact (normalized) genre-string occurrences across rows
     genre_string_counts = Counter()
@@ -245,34 +309,92 @@ def sankey_genre_subgenre(
             x_list.append(x_subs)
             y_list.append(max(start_y, min(end_y, subs_y.get(label, 0.5))))
 
-    # color nodes (simple)
-    color_palette = ["#4C78A8", "#F58518", "#E45756", "#72B7B2", "#54A24B", "#EECA3B", "#B279A2", "#9D755D"]
-    node_colors = []
-    for label in nodes:
-        if label == 'Songs':
-            node_colors.append("black")
-        elif label in top_mains:
-            node_colors.append(color_palette[top_mains.index(label) % len(color_palette)])
-        else:
-            node_colors.append("lightgrey")
+        # color nodes (simple)
+        color_palette = ["#4C78A8", "#F58518", "#E45756", "#72B7B2", "#54A24B", "#EECA3B", "#B279A2", "#9D755D"]
+        node_colors = []
+        for label in nodes:
+            if label == 'Songs':
+                node_colors.append("black")
+            elif label in top_mains:
+                node_colors.append(color_palette[top_mains.index(label) % len(color_palette)])
+            else:
+                node_colors.append("lightgrey")
 
-    fig = go.Figure(go.Sankey(
-        arrangement="fixed",
-        node=dict(
-            pad=15,
-            thickness=20,
-            line=dict(color="black", width=0.5),
-            label=nodes,
-            color=node_colors,
-            x=x_list,
-            y=y_list
-        ),
-        link=dict(
-            source=sources,
-            target=targets,
-            value=values
+        # increase pad/thickness and figure height for more vertical spacing
+        node_pad = 26
+        node_thickness = 26
+        fig = go.Figure(go.Sankey(
+            arrangement="fixed",
+            node=dict(
+                pad=node_pad,
+                thickness=node_thickness,
+                line=dict(color="black", width=0.5),
+                label=nodes,
+                color=node_colors,
+                x=x_list,
+                y=y_list
+            ),
+            link=dict(
+                source=sources,
+                target=targets,
+                value=values
+            )
+        ))
+
+        # match section background and give more vertical room
+        fig.update_layout(
+            height=760,
+            font_size=11,
+            margin=dict(t=10, l=20, r=20, b=10),
+            plot_bgcolor=green500,
+            paper_bgcolor=green500,
         )
+        return fig
+
+def genre_treemap(
+    df_linked: pd.DataFrame,
+    top_n_genres: int = 12,
+) -> go.Figure:
+    """
+    Build a treemap of the user's top genres by song count.
+    Matches section background using CSS vars for visual consistency.
+    """
+    if df_linked is None or df_linked.empty or 'artist_genres' not in df_linked.columns:
+        raise ValueError("No `artist_genres` column data available.")
+
+    css = load_css_variables("assets/styles/variables.css")
+    green500 = css.get("--color-green-500", "#1ED760")
+
+    genre_counts = Counter()
+    for val in df_linked['artist_genres'].dropna():
+        for item in _parse_genres_cell(val):
+            s = str(item).strip()
+            if s:
+                genre_counts[s.title()] += 1
+
+    top_genres = genre_counts.most_common(top_n_genres)
+    if not top_genres:
+        raise ValueError("No genres extracted from the data.")
+
+    labels = [g for g, _ in top_genres]
+    values = [c for _, c in top_genres]
+
+    fig = go.Figure(go.Treemap(
+        labels=labels,
+        values=values,
+        parents=[""] * len(labels),
+        textinfo="label+value",
+        marker=dict(colorscale='Greens', showscale=False, line=dict(width=0)),
+        root=dict(color='rgba(0,0,0,0)'),
     ))
 
-    fig.update_layout(title_text=title, font_size=10)
+    fig.update_traces(marker=dict(cornerradius=5))
+
+    # make a treemap background match section
+    fig.update_layout(
+        height=480,
+        margin=dict(t=1, l=10, r=10, b=10),
+        plot_bgcolor=green500,
+        paper_bgcolor=green500,
+    )
     return fig
