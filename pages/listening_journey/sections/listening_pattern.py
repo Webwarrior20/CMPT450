@@ -72,25 +72,6 @@ def listening_pattern_section(df=None):
                 ]
             ),
 
-            # Quick stats for Listening Patterns
-            html.P(
-                [
-                    html.Span("You listen the most on ", className="body"),
-                    html.B(f"{most_listened_day}s", className="body"),
-                    html.Br(),
-                    html.Span("You listen more during the ", className="body"),
-                    html.B(most_listened_hour, className="body"),
-                    html.Span(" with a peak at ", className="body"),
-                    html.B(formatted_peak, className="body"),
-                    html.Br(),
-                    html.Span("Your most listened to day was ", className="body"),
-                    html.B(most_listened_overall_day, className="body"),
-                    html.Span(" where you listened for ", className="body"),
-                    html.B(f"{total_hour / 3_600_000:.1f} Hours!", className="body"), # Convert ms to hours
-                ],
-                className=None,
-            ),
-
             html.Div(
                 children=[
                     html.H3(
@@ -111,7 +92,26 @@ def listening_pattern_section(df=None):
                         config={"displayModeBar": True},
                     )
                 ]
-            )
+            ),
+
+            # Quick stats for Listening Patterns
+            html.P(
+                [
+                    html.Span("You listen the most on ", className="body"),
+                    html.B(f"{most_listened_day}s", className="body"),
+                    html.Br(),
+                    html.Span("You listen more during the ", className="body"),
+                    html.B(most_listened_hour, className="body"),
+                    html.Span(" with a peak at ", className="body"),
+                    html.B(formatted_peak, className="body"),
+                    html.Br(),
+                    html.Span("Your most listened to day was ", className="body"),
+                    html.B(most_listened_overall_day, className="body"),
+                    html.Span(" where you listened for ", className="body"),
+                    html.B(f"{total_hour / 3_600_000:.1f} Hours!", className="body"),  # Convert ms to hours
+                ],
+                className=None,
+            ),
         ]
 
     )

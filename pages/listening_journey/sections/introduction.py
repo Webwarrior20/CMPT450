@@ -1,8 +1,6 @@
 from dash import html, dcc
 from utils.stats import get_first_listen_date, get_total_listening_time, get_uploaded_dataframe
 from utils.css_vars import load_css_variables
-from pathlib import Path
-import re
 import pandas as pd
 import plotly.express as px
 
@@ -47,22 +45,6 @@ def introduction_section(df=None):
                 ]
             ),
 
-            # First listen date and total listening time
-            html.P(
-                [
-                    html.Span("You first hit play on ", className="body"),
-                    html.B(first_listen_date, className="body"),
-                    html.Br(),
-                    html.Span("You've listened to Spotify for ", className="body"),
-                    html.B(total_time, className="body"),
-                    html.B(" Hours", className="body"),
-                    html.Br(),
-                    html.Span("That is equivalent to ", className="body"),
-                    html.B(f"{total_time / 24:.1f} Days!", className="body"),
-                ],
-                className=None,
-            ),
-
             # Heading for the total listening time graph
             html.Div(
                 children=[
@@ -83,6 +65,22 @@ def introduction_section(df=None):
                     )
                 ],
                 className="graph-section"
+            ),
+
+            # First listen date and total listening time
+            html.P(
+                [
+                    html.Span("You first hit play on ", className="body"),
+                    html.B(first_listen_date, className="body"),
+                    html.Br(),
+                    html.Span("You've listened to Spotify for ", className="body"),
+                    html.B(total_time, className="body"),
+                    html.B(" Hours", className="body"),
+                    html.Br(),
+                    html.Span("That is equivalent to ", className="body"),
+                    html.B(f"{total_time / 24:.1f} Days!", className="body"),
+                ],
+                className=None,
             )
         ]
     )

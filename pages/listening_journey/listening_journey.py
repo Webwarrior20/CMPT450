@@ -27,7 +27,7 @@ def create_listening_journey_layout():
             genre_dist_section(df, db),
             artist_trend_section(df),
             song_trend_section(df),
-            energy_profile_section(df)
+            energy_profile_section(df, db)
         ]
     )
 

@@ -354,7 +354,7 @@ def sankey_genre_subgenre(
         fig.update_layout(
             height=760,
             font_size=11,
-            margin=dict(t=10, l=20, r=20, b=20),
+            margin=dict(t=10, l=20, r=20, b=10),
             plot_bgcolor=green500,
             paper_bgcolor=green500,
         )

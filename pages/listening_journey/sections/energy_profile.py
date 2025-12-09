@@ -1,7 +1,7 @@
 from dash import html, dcc
 
 
-def energy_profile_section(df):
+def energy_profile_section(df, db):
     if df is None or df.empty:
         return html.Div(
             className="section",
