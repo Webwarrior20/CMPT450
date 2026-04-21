@@ -11,6 +11,9 @@ engine = create_engine(
 )
 
 
+# -----------------------------
+# CHECK CONNECTION
+# -----------------------------
 def db_connected():
     try:
         with engine.connect() as conn:
@@ -22,16 +25,52 @@ def db_connected():
         return False
 
 
-def load_table(table):
+# -----------------------------
+# SAFE LOAD (LIMITED DATA ONLY)
+# -----------------------------
+def load_recent_data(months=6):
+    """
+    Load a safe subset of data (NO ts dependency)
+    """
     try:
         with engine.connect() as conn:
-            df = pd.read_sql(text(f'SELECT * FROM "{table}"'), conn)
-        print(f"Loaded {len(df)} rows from table '{table}'")
+            df = pd.read_sql(
+                text('SELECT * FROM extracted LIMIT 50000'),
+                conn
+            )
+
+        print(f"Loaded {len(df)} rows (safe subset)")
         return df
-    except SQLAlchemyError as e:
-        print(f"Failed to load table '{table}': {e}")
+
+    except Exception as e:
+        print(f"DB error: {e}")
         return pd.DataFrame()
 
+
+# -----------------------------
+# FALLBACK FUNCTION (IMPORTANT)
+# -----------------------------
+def load_table(table):
+    print("⚠️ load_table fallback → loading limited data")
+
+    try:
+        with engine.connect() as conn:
+            df = pd.read_sql(
+                text(f'SELECT * FROM "{table}" LIMIT 50000'),
+                conn
+            )
+
+        print(f"Loaded {len(df)} rows (limited fallback)")
+        return df
+
+    except Exception as e:
+        print(f"Fallback load failed: {e}")
+        return pd.DataFrame()
+
+
+# -----------------------------
+# CHECK IF TABLE HAS DATA
+# -----------------------------
 def table_has_rows(table: str) -> bool:
     try:
         with engine.connect() as conn:

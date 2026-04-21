@@ -2,7 +2,7 @@ from dash import Dash
 from layout.main_app_layout import app_layout
 from callbacks.app.file_upload import register_upload_callbacks
 from utils.auth import spotify_client_connection
-from utils.database import db_connected, load_table, table_has_rows
+from utils.database import db_connected, table_has_rows, load_table
 from app.store import set_main_database
 from dotenv import load_dotenv
 
